@@ -4,6 +4,7 @@ const fastify = require("fastify")({
 })
 
 var user = require("./model/User")
+var blog = require("./model/Blogs")
 
 
 // Can use default JSON/Text parser for different content Types
@@ -23,7 +24,6 @@ fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function
 fastify.get('/', function (req, res) {
     res.send({ hello: 'world' })
 })
-
 
 
 fastify.post("/api/register", (req, res) => {
@@ -56,10 +56,39 @@ fastify.post("/api/login", (req, res) => {
 
 
 
+fastify.get("/api/blogs", (req, res) => {
+    blog.getAllBlogs((err, result) => {
+        if (err) {
+            res.send({ status: "error", message: err })
+        }
+        res.send({ status: "success", message: result })
 
+    })
 
+})
 
+fastify.post("/api/user/blogs", (req, res) => {
+    let user_id = req.body.user_id
+    blog.getUserBlogs(user_id, (err, result) => {
+        if (err) {
+            res.send({ status: "error", message: err })
+        }
+        res.send({ status: "success", message: result })
 
+    })
+})
+
+fastify.post("/api/blog", (req, res) => {
+    let blog_id = req.body.blog_id
+    
+    blog.getBlogByID(blog_id, (err, result) => {
+        if (err) {
+            res.send({ status: "error", message: err })
+        }
+        res.send({ status: "success", message: result })
+
+    })
+})
 
 
 
