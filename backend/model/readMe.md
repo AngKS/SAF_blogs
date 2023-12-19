@@ -1,0 +1,1 @@
+SUpabase passoword: nzTwqDiFLSKvjnLP
