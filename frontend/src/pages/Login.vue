@@ -33,6 +33,7 @@
                     v-model="form"
                     lazy-validation
                     @submit.prevent="onSubmit"
+                    v-auto-animate
                 >
                     <v-text-field
                         v-model="username"
@@ -49,6 +50,7 @@
                         :rules="[required]"
                         clearable
                         label="Password"
+                        type="password"
                         placeholder="Enter your password"
                         ></v-text-field>
 
@@ -60,6 +62,7 @@
                             size="large"
                             type="submit"
                             variant="elevated"
+                            v-auto-animate
                             >
                             Sign In
                         </v-btn>
@@ -106,6 +109,7 @@ export default {
             loading: false,
             snackbarOpen: false,
             snackbarText: "",
+            loggedIn: false,
         }
     },
     methods: {
@@ -149,6 +153,46 @@ export default {
         required(v) {
             return !!v || 'Field is required'
         },
+    },
+    mounted() {
+        // check if user is logged in
+        const token = localStorage.getItem('token')
+        const user = localStorage.getItem('user')
+        if (token && user) {
+            // check if user expired
+            if (user.exp < Date.now() / 1000){
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
+            }
+            else{
+                // authenticate token to make sure it is valid
+                new Promise((resolve, reject) => {
+                    const URL = 'http://localhost:3000/api/user/auth'
+                    axios.post(URL, {token: token}).then((response) => {
+                        resolve(response)
+                    }).catch((error) => {
+                        reject(error)
+                    })
+
+                }).then((response) => {
+                    if (response.data.success){
+                        console.log(response.data)
+                        this.loggedIn = true
+                    }
+                    else{
+                        localStorage.removeItem('token')
+                        localStorage.removeItem('user')
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
+
+
+
+            }
+            
+            
+        }
     },
 }
 </script>

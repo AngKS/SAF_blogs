@@ -5,6 +5,7 @@
         class="dis-relative"
     >
         <v-btn
+            v-if="newPostBtn"
             icon="mdi-plus"
             color="black"
             class="absolute-btn rounded-circle"
@@ -124,9 +125,19 @@ export default {
                     createdAt: "test",
                 }
             ],
+            newPostBtn: false,
         }
     },
     methods: {
+
+        isUserAuthenticated(){
+            const token = localStorage.getItem('token')
+            if (token){
+                return true
+            }
+            return false
+        },
+
         async api() {
             return new Promise(resolve => {
                 setTimeout(() => {
@@ -145,7 +156,12 @@ export default {
 
     },
     mounted() {
-        
+        if (this.isUserAuthenticated()){
+            this.newPostBtn = true
+        }
+        else{
+            this.newPostBtn = false
+        }
     },
 }
 </script>

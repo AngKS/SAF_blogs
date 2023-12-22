@@ -3,6 +3,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import { loadFonts } from './plugins/webfontloader'
 import * as VueRouter from 'vue-router'
+import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
 
 
 import Home from './pages/Home.vue'
@@ -89,6 +90,7 @@ router.beforeEach(async (to, from, next) => {
 
 
 createApp(App)
+  .use(autoAnimatePlugin)
   .use(vuetify)
   .use(router)
   .mount('#app')
