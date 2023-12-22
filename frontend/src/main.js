@@ -40,6 +40,14 @@ const compareToken = async (token) => {
   let response = await axios.post('http://localhost:3000/api/user/auth', {token: token})
 
   if (response.data.status === "success"){
+    console.log(response.data.message)
+    let user = {
+      id: response.data.message.id,
+      username: response.data.message.username,
+      role: response.data.message.role,
+      expiresAt: response.data.message.exp
+    }
+    localStorage.setItem('user', JSON.stringify(user))
     return true
   }
   else{
@@ -57,6 +65,7 @@ router.beforeEach(async (to, from, next) => {
     return next('/login');
   }
   else if (authRequired && token){
+
     let result = await compareToken(token)
     if (result){
 

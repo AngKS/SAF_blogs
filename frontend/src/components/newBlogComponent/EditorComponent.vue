@@ -1,5 +1,21 @@
 <template>
-    <editor-content :editor="editor" />
+    <v-container
+        fluid
+        fill-height
+        class="d-flex dis-relative h-full"
+    >
+        <v-btn
+            variant="tonal"
+            color="black"
+            class="another-absolute-button d-flex align-center" 
+            @click="save"
+        >
+            <span>Save</span>
+            <v-icon class="ml-2">mdi-content-save</v-icon>
+        </v-btn>
+        <editor-content :editor="editor" />
+    </v-container>
+    
 </template>
 
 <style lang="css">
@@ -7,7 +23,7 @@
     .tiptap{
         flex-grow: 1;
         height: 100%;
-        max-width: 65vw;
+        max-width: 63vw;
     }
 
     /* remove blue border when selected */
@@ -27,7 +43,21 @@
         pointer-events: none;
         }
 
+    .another-absolute-button{
+        opacity: 0.6;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin: 1rem;
+    }
+
+    .another-absolute-button:hover{
+        opacity: 1;
+        cursor: pointer;
+    }
+
 </style>
+
 
 <script>
 import { Editor, EditorContent } from '@tiptap/vue-3'
@@ -49,6 +79,17 @@ export default {
         editorContent: {
             type: String,
             default: "",
+        },
+        editorEditable: {
+            type: Boolean,
+            default: true,
+        },
+    },
+
+    methods: {
+        save(){
+            const content = this.editor.getJSON()
+            this.$emit('editorSave', content)
         }
     },
     mounted() {
@@ -71,13 +112,15 @@ export default {
                     },
                 }),
             ],
-            editable: true,
+            editable: this.editorEditable,
             autoFocus: true,
 
         })
         // HTML with trim white space
         this.editor.commands.insertContent('<h1>Title</h1><p>Tell your story...</p>')
     },
+
+
 
     beforeUnmount() {
         this.editor.destroy()

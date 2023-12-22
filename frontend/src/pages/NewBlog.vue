@@ -3,17 +3,24 @@
         fluid
         fill-height
         class="d-flex h-full"
-    >
+    > 
+        
         <v-row>
             <v-col
                 cols="12"
                 md="8"
                 sm="12"
-                class="mx-auto d-flex bg-red"
+                class="mx-auto d-flex rounded-lg"
+                
             >
                 <EditorComponent
                     :editorContent="editorContent"
-                    @editorSave="save"
+                    :editorEditable="editorEditable"
+                    @editorSave="(content) => {
+                        editorContent = content
+                        editorContentSaved()
+                    }"
+                    
                 ></EditorComponent>
             </v-col>
         </v-row>
@@ -21,6 +28,12 @@
     </v-container>
 </template>
 
+<style lang="css">
+
+
+
+
+</style>
 
 <script>
 import EditorComponent from "../components/newBlogComponent/EditorComponent.vue"
@@ -34,14 +47,20 @@ export default {
     },
     data() {
         return {
-            editorContent: ""
+            editorContent: "",
+            editorEditable: true,
 
         }
     },
     methods: {
-        save(content) {
-            console.log(content)
+        editorContentSaved() {
+            console.log(this.editorContent)
+            // check if user is logged in
+            const user = localStorage.getItem('user')
+            
+
         }
+            
 
     },
 }

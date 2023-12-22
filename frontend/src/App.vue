@@ -73,6 +73,7 @@ export default {
     //
     loading: false,
     user: null,
+    currPage: null,
 
   }),
   methods: {
@@ -87,6 +88,7 @@ export default {
 
      }
   },
+
   mounted() {
     // check if user is logged in
     
@@ -94,9 +96,11 @@ export default {
     if (token) {
       // check if token is valid
       this.getUserAuth()
-      
-
     }
+
+    // check what is the current page
+    this.currPage = this.$route.path
+    console.log(this.currPage)
 
 
   },
