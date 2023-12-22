@@ -6,7 +6,7 @@ const saltRounds = 10;
 
 let User = {
 
-    addUser: (uername, password, role, callback) => {
+    addUser: (email, uername, password, role, callback) => {
         let conn = db.getConnection();
         conn.connect((err) => {
             if (err) {
@@ -18,8 +18,8 @@ let User = {
                     return callback(errHashing, null)
                 }
                 else{
-                    let sql = "INSERT INTO users (username, user_password, user_role) VALUES (?, ?, ?)"
-                    conn.query(sql, [uername, password, role], (err, result) => {
+                    let sql = "INSERT INTO users (email, username, user_password, user_role) VALUES (?, ?, ?, ?)"
+                    conn.query(sql, [email, uername, password, role], (err, result) => {
                         conn.end()
                         if (err) {
                             return callback(err, null)
@@ -81,6 +81,17 @@ let User = {
             }
         })
     },
+
+    authenticateUser: (token, callback) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+            if (err){
+                return callback(err, null)
+            }
+            else{
+                return callback(null, decoded)
+            }
+        })
+    }
 
     
 

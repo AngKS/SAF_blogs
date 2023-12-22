@@ -2,9 +2,13 @@ require('dotenv').config();
 const fastify = require("fastify")({
     logger: true
 })
-
+const cors = require('@fastify/cors')
 var user = require("./model/User")
 var blog = require("./model/Blogs")
+
+fastify.register(cors, {
+    origin: '*'
+})
 
 
 // Can use default JSON/Text parser for different content Types
@@ -18,7 +22,7 @@ fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function
     }
 })
 
-// API Endpoints
+// API Endpoints``
 
 // Hello World test route
 fastify.get('/', function (req, res) {
@@ -30,8 +34,9 @@ fastify.post("/api/register", (req, res) => {
     console.log(`\n\n\n=========== logging ============\n ${JSON.stringify(req.body)}\n\n\n`)
     let username = req.body.username
     let password = req.body.password
+    let email = req.body.email
     let role = req.body.role
-    user.addUser(username, password, role, (err, result) => {
+    user.addUser(email, username, password, role, (err, result) => {
         if (err) {
             res.send({ status: "error", message: err })
         }
@@ -54,6 +59,16 @@ fastify.post("/api/login", (req, res) => {
 
 })
 
+fastify.post("/api/user/auth", (req, res) => {
+    let token = req.body.token
+    user.authenticateUser(token, (err, result) => {
+        if (err) {
+            res.send({ status: "error", message: err })
+        }
+        res.send({ status: "success", message: result })
+
+    })
+})
 
 
 fastify.get("/api/blogs", (req, res) => {
