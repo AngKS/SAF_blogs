@@ -1,4 +1,4 @@
-let db = require("./databaseConfigs")
+`let db = require("./databaseConfigs")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const saltRounds = 10;

@@ -3,6 +3,8 @@ const fastify = require("fastify")({
     logger: true
 })
 const cors = require('@fastify/cors')
+const {verifyToken} = require("./model/auth/verifyToken")
+
 var user = require("./model/User")
 var blog = require("./model/Blogs")
 
@@ -82,6 +84,7 @@ fastify.get("/api/blogs", (req, res) => {
 
 })
 
+// GET all user blogs
 fastify.post("/api/user/blogs", (req, res) => {
     let user_id = req.body.user_id
     blog.getUserBlogs(user_id, (err, result) => {
@@ -93,6 +96,7 @@ fastify.post("/api/user/blogs", (req, res) => {
     })
 })
 
+// GET specific blog
 fastify.post("/api/blog", (req, res) => {
     let blog_id = req.body.blog_id
     
@@ -105,8 +109,16 @@ fastify.post("/api/blog", (req, res) => {
     })
 })
 
+// POST new Blog post
+fastify.post("/api/blog/new", (req, res) => {
 
+    let blog_content = req.body.content
+    let user_token = req.body.token
 
+    // authorize if token is fit for transaction
+    const userAuthenticated = null
+
+})
 
 
 

@@ -57,7 +57,21 @@ export default {
             console.log(this.editorContent)
             // check if user is logged in
             const user = localStorage.getItem('user')
-            
+            const token = localStorage.getItem('token')
+            const blog_content = JSON.stringify(this.editorContent)
+            if (user){
+                // send request to backend to save blog
+                const URL = "http://localhost:3000/api/blog"
+                const data = {
+                    content: blog_content,
+                    token: token
+                }
+                const response = axios.post(URL, data)
+                console.log(response)
+            } else {
+                // redirect to login page
+                this.$router.push('/login')
+            }
 
         }
             
