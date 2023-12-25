@@ -16,9 +16,11 @@
     "@tiptap/pm": "^2.1.13",
     "@tiptap/starter-kit": "^2.1.13",
     "@tiptap/vue-3": "^2.1.13",
+    "axios": "^1.6.2",
     "roboto-fontface": "*",
     "vite": "^4.5.1",
     "vue": "^3.3.11",
+    "vue-faker": "^3.0.0",
     "vue-router": "^4.2.5",
     "vuetify": "^3.0.0-beta.0",
     "webfontloader": "^1.0.0"

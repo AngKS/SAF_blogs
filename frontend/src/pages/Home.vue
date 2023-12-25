@@ -18,20 +18,22 @@
                 md="6"
                 class="mx-auto"
             >
-                <v-infinite-scroll
-                    :on-infinite="load"
-                    :scroll-threshold="0.5"
-                    :items="blogPosts"
+                <v-list
+                    three-line
+                    height="100%"
+                    class="mx-auto"
                 >
-                    <template
-                        v-for="(post, index) in blogPosts"
-                        :key="index"
+                    <v-list-item
+                        v-for="(item, i) in blogPosts"
+                        :key="i"
+                        @click="$router.push(`/post/${item.author}`)"
                     >
-                        <BlogPostCard
-                            :postInfo="post"
-                        ></BlogPostCard>
-                    </template>
-                </v-infinite-scroll>
+                        <v-list-item-content>
+                            <v-list-item-title class="headline mb-1">{{ item.title }}</v-list-item-title>
+                            <v-list-item-subtitle>{{ item.content }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
             </v-col>
         </v-row>
     </v-container>
@@ -53,6 +55,7 @@
 </style>
 
 <script>
+
 export default {
     name: 'Homepage',
     props: {
@@ -61,12 +64,19 @@ export default {
         return {
             windowHeight: window.innerHeight,
             blogPosts: [
+               {
+                    author: 'John Doe',
+                    title: 'First Blog Post',
+                    content: 'This is the content of the first blog post.',
+                    image: 'https://example.com/image1.jpg',
+                    createdAt: '2022-01-01T00:00:00Z',
+                },
                 {
-                    author: "test",
-                    title: "test",
-                    content: "test",
-                    image: "test",
-                    createdAt: "test",
+                    author: 'Jane Doe',
+                    title: 'Second Blog Post',
+                    content: 'This is the content of the second blog post.',
+                    image: 'https://example.com/image2.jpg',
+                    createdAt: '2022-01-02T00:00:00Z',
                 },
                 {
                     author: "test",
@@ -111,21 +121,14 @@ export default {
                     createdAt: "test",
                 },
                 {
-                    author: "test",
-                    title: "test",
-                    content: "test",
-                    image: "test",
-                    createdAt: "test",
-                },
-                {
-                    author: "test",
-                    title: "test",
-                    content: "test",
-                    image: "test",
-                    createdAt: "test",
+                    author: "ronald Reagan",
+                    title: "My first blog post",
+                    content: "I am the ",
                 }
             ],
+            items: [],
             newPostBtn: false,
+            blogLoading: false,
         }
     },
     methods: {
@@ -138,20 +141,19 @@ export default {
             return false
         },
 
-        async api() {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    resolve(Array.from({ length: 10 }, (k, v) => v + this.items.at(-1) + 1))
-                }, 1000)
-            })
-        },
-        async load({ done }) {
+        load({ done }) {
+            // Set loading state
+            this.blogLoading = true;
             // Perform API call
-            const res = await this.api()
+            setTimeout(() => {
+                this.blogPosts = this.generateBlogPosts(10);
 
-            this.items.push(...res)
+                // Update list
+                this.items = [...this.blogPosts];
 
-            done('ok')
+                // Set loading state
+                this.blogLoading = false;
+            }, 3000);
         },
 
     },
@@ -162,6 +164,8 @@ export default {
         else{
             this.newPostBtn = false
         }
+
+        this.load()
     },
 }
 </script>
