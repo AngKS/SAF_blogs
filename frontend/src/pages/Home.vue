@@ -28,10 +28,36 @@
                         :key="i"
                         @click="$router.push(`/post/${item.author}`)"
                     >
-                        <v-list-item-content>
-                            <v-list-item-title class="headline mb-1">{{ item.title }}</v-list-item-title>
-                            <v-list-item-subtitle>{{ item.content }}</v-list-item-subtitle>
-                        </v-list-item-content>
+                        <v-card
+                            flat
+                            color="transparent"
+                            class="dis-relative"
+                        >
+                            <v-card-subtitle>
+                                <span>{{ item.author }} • {{ formatDate(item.createdAt) }}</span>
+                            </v-card-subtitle>
+                            
+                            <v-card-title>{{ item.title }}</v-card-title>
+                            <v-card-text>
+                                <!-- restrict to 2 lines of words thereafter ... -->
+                                <span
+                                    class="text-truncate"
+                                    style="-webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;"
+                                >{{ item.content }}</span>
+                            </v-card-text>
+                            <v-card-actions
+                                class="absolute-btn"
+                            >
+                                <!-- delete post icon -->
+                                <v-btn
+                                    icon
+                                    color="black"
+                                    @click.stop="deletePost(item)"
+                                >
+                                    <v-icon>mdi-cross</v-icon>
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
                     </v-list-item>
                 </v-list>
             </v-col>
@@ -123,7 +149,12 @@ export default {
                 {
                     author: "ronald Reagan",
                     title: "My first blog post",
-                    content: "I am the ",
+                    content: "This is a dummy blog post content. It's a beautiful day in our software development world. As we continue to embrace new technologies, we're finding new ways to improve efficiency and productivity. In this blog post, we'll explore some of the latest trends in the industry, discuss their implications, and look at some real-world examples of how they're being used. From AI to cloud computing, from big data to cybersecurity, we'll cover a range of topics that are shaping the future of our industry. So, whether you're a seasoned professional or just starting out in your career, there's something here for everyone. Stay tuned for more updates and happy coding!",
+                },
+                {
+                    author: "ronald Reagan",
+                    title: "My first Speech",
+                    content: "This is a dummy blog post content. It's a beautiful day in our software development world. As we continue to embrace new technologies, we're finding new ways to improve efficiency and productivity. In this blog post, we'll explore some of the latest trends in the industry, discuss their implications, and look at some real-world examples of how they're being used. From AI to cloud computing, from big data to cybersecurity, we'll cover a range of topics that are shaping the future of our industry. So, whether you're a seasoned professional or just starting out in your career, there's something here for everyone. Stay tuned for more updates and happy coding!",
                 }
             ],
             items: [],
@@ -132,6 +163,11 @@ export default {
         }
     },
     methods: {
+        formatDate(dateString) {
+            const options = { day: '2-digit', month: 'short' };
+            const date = new Date(dateString);
+            return date.toLocaleDateString(undefined, options);
+        },
 
         isUserAuthenticated(){
             const token = localStorage.getItem('token')

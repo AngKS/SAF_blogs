@@ -6,7 +6,7 @@
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-avatar
-                color="transparent"
+                color="black"
                 @click="$router.push('/login')"
             >
                 <v-icon icon="mdi-account-circle" size="32"></v-icon>
