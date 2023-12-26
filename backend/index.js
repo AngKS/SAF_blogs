@@ -99,7 +99,7 @@ fastify.post("/api/user/blogs", (req, res) => {
 // GET specific blog
 fastify.post("/api/blog", (req, res) => {
     let blog_id = req.body.blog_id
-    
+    console.log(req.body)
     blog.getBlogByID(blog_id, (err, result) => {
         if (err) {
             res.send({ status: "error", message: err })
@@ -149,8 +149,100 @@ fastify.post("/api/blog/new", async (req, res) => {
 
 })
 
+fastify.put("/api/blog/update", async (req, res) => {
+    
+        let blog_content = req.body.content
+        let blog_title = req.body.title
+        let user_token = req.body.token
+        let blog_id = req.body.blogUUID
+        let userUUID = req.body.userUUID
+    
+        // authorize if token is fit for transaction
+    
+        var userAuthenticated = null
+        try {
+            jwt.verify(user_token, process.env.JWT_SECRET, (err, decoded) => {
+                if (err) {
+                    return callback(err, null)
+                }
+                else {
+                    userAuthenticated = decoded
+                }
+            })
+            console.log(userAuthenticated)
+        } catch (err) {
+            console.log("HERE", err)
+            return res.send({ status: "error", message: err })
+        }
+        if (userAuthenticated !== null) {
+            console.log("Updating blog")
+            // compare user id with author_user_id
+            if (userAuthenticated.id !== userUUID){
+                return res.send({ status: "error", message: "Not Authorized" })
+            }
+            else{
+                blog.updateBlog(blog_title, blog_content, userUUID, blog_id, (err, result) => {
+                    if (err) {
+                        res.send({ status: "error", message: err })
+                    }
+                    res.send({ status: "success", message: result })
+
+                })
+            }
+
+            
+        }
+        else {
+            res.send({ status: "error", message: "Not Authorized" })
+        }
+})
 
 
+fastify.post("/api/blog/delete", async (req, res) => {
+        
+            let user_token = req.body.token
+            let blog_id = req.body.blogUUID
+            let userUUID = req.body.userUUID
+        
+            // authorize if token is fit for transaction
+            console.log(req.body)
+            var userAuthenticated = null
+            try {
+                jwt.verify(user_token, process.env.JWT_SECRET, (err, decoded) => {
+                    if (err) {
+                        return callback(err, null)
+                    }
+                    else {
+                        userAuthenticated = decoded
+                    }
+                })
+                console.log(userAuthenticated)
+            } catch (err) {
+                console.log("HERE", err)
+                return res.send({ status: "error", message: err })
+            }
+            if (userAuthenticated !== null) {
+                console.log("Deleting blog")
+                // compare user id with author_user_id
+                if (userAuthenticated.id !== userUUID){
+                    return res.send({ status: "error", message: "Not Authorized" })
+                }
+                else{
+                    blog.deleteBlog(userUUID, blog_id, (err, result) => {
+                        if (err) {
+                            res.send({ status: "error", message: err })
+                        }
+                        res.send({ status: "success", message: result })
+    
+                    })
+                }
+    
+                
+            }
+            else {
+                res.send({ status: "error", message: "Not Authorized" })
+            }
+})
 
 
 

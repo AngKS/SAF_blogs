@@ -7,6 +7,20 @@
         
         <v-row>
             <v-col
+                v-if="loading"
+                cols="12"
+                md="8"
+                sm="12"
+                class="mx-auto d-flex flex-column rounded-lg"
+            >
+                <v-progress-circular
+                    indeterminate
+                    color="black"
+                    size="large"
+                ></v-progress-circular>
+            </v-col>    
+            <v-col
+                v-else
                 cols="12"
                 md="8"
                 sm="12"
@@ -37,9 +51,14 @@
                     </v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-btn
+                        color="red"
+                        icon="mdi-delete"
+
+                    ></v-btn>
+                    <v-btn
                         color="black"
                         text
-                        @click="$router.push('/blogs')"
+                        @click="$router.push('/')"
                     >Back</v-btn>
                 </v-toolbar>
                 <v-divider
@@ -50,6 +69,7 @@
                     style="flex-grow: 1;"
                     :editorContent="editorContent"
                     :editorEditable="editorEditable"
+                    :saveBtnLoading="savingProgress"
                     @editorSave="(content) => {
                         editorContent = content
                         editorContentSaved()
@@ -84,6 +104,9 @@ export default {
             editorContent: "",
             editorEditable: true,
             userInfo: null,
+            savingProgress: false,
+            loading: false,
+            editorState: null,
 
         }
     },
@@ -101,23 +124,66 @@ export default {
             
         },
 
+        async deleteContent(){
+            this.savingProgress = true
+            if (this.editorState === "updateBlog"){
+                // delete blog
+                const URL = "http://localhost:3000/api/blog/delete"
+                const data = {
+                    blogUUID: this.$route.params.id,
+                    token: localStorage.getItem('token'),
+                    userUUID: this.userInfo.id
+                }
+                await axios.post(URL, data).then(response => {
+                    if (response.data.status === "success"){
+                        console.log(response.data)
+                        this.$router.push('/')
+                    }
+                })
+            }
+            else{
+                this.$router.push('/')
+            }
+            this.savingProgress = false
+        },
+
         editorContentSaved() {
-            console.log(this.editorContent)
+            this.savingProgress = true
             // check if user is logged in
             const user = localStorage.getItem('user')
             const token = localStorage.getItem('token')
             const blog_content = JSON.stringify(this.editorContent)
             
             if (user){
-                // send request to backend to save blog
-                const URL = "http://localhost:3000/api/blog/new"
-                const data = {
-                    title: this.getTitle(),
-                    content: blog_content,
-                    token: token
+                const route = this.$route
+                if (this.editorState === "updateBlog" && route.params.id){
+                    // update existing blog
+                    const URL = "http://localhost:3000/api/blog/update"
+                    const data = {
+                        blogUUID: this.$route.params.id,
+                        title: this.getTitle(),
+                        content: blog_content,
+                        token: token,
+                        userUUID: this.userInfo.id
+                    }
+                    const response = axios.put(URL, data)
+                    console.log(response)
+                    this.savingProgress = false
+                    return
                 }
-                const response = axios.post(URL, data)
-                console.log(response)
+                else{
+                    const URL = "http://localhost:3000/api/blog/new"
+                    const data = {
+                        title: this.getTitle(),
+                        content: blog_content,
+                        token: token
+                    }
+                    const response = axios.post(URL, data)
+                    console.log(response)
+                    this.savingProgress = false
+                }
+
+                
             } else {
                 // redirect to login page
                 this.$router.push('/login')
@@ -128,7 +194,52 @@ export default {
 
     },
     mounted() {
+        this.loading = true
         this.userInfo = JSON.parse(localStorage.getItem('user'))
+        // check if this is a new blog or an existing blog
+
+        let route = this.$route
+        if (route.params.id){
+            // get blog content
+            console.log(route.params.id)
+            const URL = "http://localhost:3000/api/blog"
+            const data = {
+                blog_id: route.params.id
+            }
+            axios.post(URL, data).then(response => {
+                if (response.data.status === "success"){
+                    const blog_content = JSON.parse(response.data.message[0].blog_content)
+                    this.editorContent = blog_content
+                }
+            })
+            this.editorState = "updateBlog"
+
+        }
+        else{
+            // create new blog
+            this.editorContent = {
+                "time": 1619472000000,
+                "blocks": [
+                    {
+                        "type": "header",
+                        "data": {
+                            "text": "Title",
+                            "level": 1
+                        }
+                    },
+                    {
+                        "type": "paragraph",
+                        "data": {
+                            "text": "Start writing here..."
+                        }
+                    }
+                ],
+                "version": "2.22.2"
+            }
+            this.editorState = "newBlog"
+        }
+        this.loading = false
+
     },
 }
 </script>

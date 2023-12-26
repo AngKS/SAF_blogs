@@ -9,6 +9,7 @@
             color="black"
             class="another-absolute-button d-flex align-center" 
             @click="save"
+            :loading="saveBtnLoading"
         >
             <span>Save</span>
             <v-icon class="ml-2">mdi-content-save</v-icon>
@@ -86,6 +87,10 @@ export default {
             type: Boolean,
             default: true,
         },
+        saveBtnLoading: {
+            type: Boolean,
+            default: false,
+        }
     },
 
     methods: {
@@ -97,7 +102,10 @@ export default {
     watch: {
         editorContent: {
             handler: function (val, oldVal) {
-                console.log(val)
+                // clear content
+                this.editor.commands.clearContent()
+                // insert new content
+                this.editor.commands.setContent(val)
             },
             deep: true
         }
@@ -126,8 +134,7 @@ export default {
             autoFocus: true,
 
         })
-        // HTML with trim white space
-        this.editor.commands.insertContent('<h1>Title</h1><p>Tell your story...</p>')
+        
     },
 
 

@@ -7,14 +7,13 @@
       <v-toolbar
         flat
         color="white"
-        class="d-flex"
+        class="d-flex justify-center"
       >
         <v-toolbar-title
-          class="site-title "
+          class="site-title text-center"
           @click="$router.push('/')"
 
         >Bloks.</v-toolbar-title>
-        <v-spacer></v-spacer>
 
 
       </v-toolbar>
@@ -31,7 +30,10 @@
 
     @import url('https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&family=Rubik+Mono+One&display=swap');
 
-
+    .site-title-font{
+      font-family: 'Rubik Doodle Shadow', cursive;
+      letter-spacing: 0.2rem;
+    }
 
     .site-title {
       font-family: 'Rubik Mono One', sans-serif;
@@ -77,7 +79,6 @@ export default {
         let response = await axios.post('http://localhost:3000/api/user/auth', { token: token })
 
       if (response.data.status === "success") {
-        console.log(response.data.message)
         let user = {
           id: response.data.message.id,
           username: response.data.message.username,
@@ -88,7 +89,7 @@ export default {
       }
       
         this.loading = false
-      return
+      
      }
   },
 

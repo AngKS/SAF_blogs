@@ -17,18 +17,28 @@
             <v-col
                 cols="12"
                 md="6"
-                class="ml-auto"
-            >
+                class="ml-auto d-flex justify-center align-start"
+            >                
+                <v-progress-circular
+                    v-if="blogLoading"
+                    indeterminate
+                    color="black"
+                    size="large"
+                    class="mx-auto"
+                ></v-progress-circular>
+
                 <v-list
+                    v-else
                     three-line
                     height="100%"
-                    class="mx-auto"
+                    class="mx-auto bg-transparent "
+                    
                 >
                     <v-list-item
-                        v-for="(item, i) in blogPosts"
+                        v-for="(blog_item, i) in blogPosts"
                         :key="i"
                         v-slot="{ active, toggle }"
-                        class="px-0"
+                        class="px-0 bg-white mb-1"
                     >
                         <!-- show the delete button on hover -->
                         <v-card
@@ -36,10 +46,11 @@
                             color="transparent"
                             class="dis-relative"
                         >
+
                             <v-card-subtitle
                                 class="d-flex justify-between align-center"
                             >
-                                <span>{{ item.author }} • {{ formatDate(item.createdAt) }}</span>
+                                <span>{{ blog_item.author }} • {{ formatDate(blog_item.date) }}</span>
                                 <v-spacer></v-spacer>
                                 <v-menu
                                     v-if="isUserAuthenticated && user !== null"
@@ -66,12 +77,14 @@
                                             :key="i"
                                             class=""
                                         >
-                                            <v-list-item-title
+                                            <v-btn
+                                                :disabled="!authUserIsAuthor(blog_item)"
                                                 @click="item.action"
-                                                class="cursor-pointer"
-                                            >
-                                                {{ item.title }}
-                                            </v-list-item-title>
+                                                class="text-left"
+                                                width="100%"
+                                                flat
+                                            >{{ item.title }}</v-btn>
+                                            
                                         </v-list-item>
                                     </v-list>
                                 </v-menu>
@@ -79,19 +92,21 @@
                             
                             <v-card-title
                                 class="cursor-pointer"
-                                @click="$router.push(`/post/${item.author}`)"
+                                @click="$router.push(`/post/${blog_item.uuid}`)"
 
-                            >{{ item.title }}</v-card-title>
+                            >{{ blog_item.title }}</v-card-title>
                             <v-card-text
-                                class="cursor-pointer"
-                                @click="$router.push(`/post/${item.author}`)"
+                                class="cursor-pointer" 
+                                @click="$router.push(`/post/${blog_item.uuid}`)"
                             >
                                 <!-- restrict to 2 lines of words thereafter ... -->
                                 <span
                                     class="text-truncate"
                                     style="-webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;"
-                                >{{ item.content }}</span>
+                                >{{ parseBlogContent(blog_item.content) }}</span>
+
                             </v-card-text>
+                            
                         </v-card>
                     </v-list-item>
                 </v-list>
@@ -105,6 +120,7 @@
                     width="75%"
                     height="fit-content"
                     class=""
+                    flat
                     
                 >
                     <v-card-subtitle class="bg-black" style="width: 100%;"></v-card-subtitle>
@@ -173,7 +189,8 @@
 </style>
 
 <script>
-
+import axios from 'axios'
+import moment from 'moment'
 export default {
     name: 'Homepage',
     props: {
@@ -182,86 +199,22 @@ export default {
         return {
             windowHeight: window.innerHeight,
             blogPostMenu: [
-                {
-                    title: 'Edit',
-                    action: () => {
-                        console.log('Edit')
-                    }
-                },
+
                 {
                     title: 'Delete',
                     action: () => {
                         console.log('Delete')
                     }
                 },
+                {
+                    title: 'Edit',
+                    action: () => {
+                        console.log('Edit')
+                    }
+                },
             ],
             blogPosts: [
-               {
-                    author: 'John Doe',
-                    title: 'First Blog Post',
-                    content: 'This is the content of the first blog post.',
-                    image: 'https://example.com/image1.jpg',
-                    createdAt: '2022-01-01T00:00:00Z',
-                },
-                {
-                    author: 'Jane Doe',
-                    title: 'Second Blog Post',
-                    content: 'This is the content of the second blog post.',
-                    image: 'https://example.com/image2.jpg',
-                    createdAt: '2022-01-02T00:00:00Z',
-                },
-                {
-                    author: "test",
-                    title: "test",
-                    content: "test",
-                    image: "test",
-                    createdAt: "test",
-                },
-                {
-                    author: "test",
-                    title: "test",
-                    content: "test",
-                    image: "test",
-                    createdAt: "test",
-                },
-                {
-                    author: "aks",
-                    title: "test",
-                    content: "test",
-                    image: "test",
-                    createdAt: "test",
-                },
-                {
-                    author: "aks",
-                    title: "test",
-                    content: "test",
-                    image: "test",
-                    createdAt: "test",
-                },
-                {
-                    author: "test",
-                    title: "test",
-                    content: "test",
-                    image: "test",
-                    createdAt: "test",
-                },
-                {
-                    author: "test",
-                    title: "test",
-                    content: "test",
-                    image: "test",
-                    createdAt: "test",
-                },
-                {
-                    author: "ronald Reagan",
-                    title: "My first blog post",
-                    content: "This is a dummy blog post content. It's a beautiful day in our software development world. As we continue to embrace new technologies, we're finding new ways to improve efficiency and productivity. In this blog post, we'll explore some of the latest trends in the industry, discuss their implications, and look at some real-world examples of how they're being used. From AI to cloud computing, from big data to cybersecurity, we'll cover a range of topics that are shaping the future of our industry. So, whether you're a seasoned professional or just starting out in your career, there's something here for everyone. Stay tuned for more updates and happy coding!",
-                },
-                {
-                    author: "ronald Reagan",
-                    title: "My first Speech",
-                    content: "This is a dummy blog post content. It's a beautiful day in our software development world. As we continue to embrace new technologies, we're finding new ways to improve efficiency and productivity. In this blog post, we'll explore some of the latest trends in the industry, discuss their implications, and look at some real-world examples of how they're being used. From AI to cloud computing, from big data to cybersecurity, we'll cover a range of topics that are shaping the future of our industry. So, whether you're a seasoned professional or just starting out in your career, there's something here for everyone. Stay tuned for more updates and happy coding!",
-                }
+              
             ],
             items: [],
             newPostBtn: false,
@@ -270,7 +223,20 @@ export default {
         }
     },
     methods: {
+        authUserIsAuthor(blog){
+            
+            console.log(user, blog.author)
+            if (user){
+                if (JSON.parse(user).username == blog.author){
+                    
+                    if (JSON.parse(user).id == blog.author_id){
+                        return true
+                    }
 
+                }
+            }
+            return false
+        },
         userImageSrc(){
             if (this.user !== null){
                 return `https://www.robohash.org/${this.user.username}`
@@ -278,9 +244,7 @@ export default {
         },
 
         formatDate(dateString) {
-            const options = { day: '2-digit', month: 'short' };
-            const date = new Date(dateString);
-            return date.toLocaleDateString(undefined, options);
+            return moment(dateString).fromNow()
         },
 
         isUserAuthenticated(){
@@ -303,17 +267,27 @@ export default {
             return false
         },
 
-        load() {
+        parseBlogs(data){
+            for (let i = 0; i < data.length; i++){
+                let blog = {
+                    uuid: data[i].blogUUID,
+                    title: data[i].blog_title,
+                    content: data[i].blog_content,
+                    author: data[i].username,
+                    date: data[i].last_updated,
+                }
+                this.blogPosts.push(blog)
+            }
+        },
+        async load() {
             // Set loading state
             this.blogLoading = true;
-            // Perform API call
-            setTimeout(() => {
-                // Update list
-                this.items = [...this.blogPosts];
-
-                // Set loading state
+            // Load blog posts
+            const response = await axios.get('http://localhost:3000/api/blogs');
+            if (response.data.status === "success"){
+                let result = this.parseBlogs(response.data.message)
                 this.blogLoading = false;
-            }, 3000);
+            }
         },
         authUserIsAuthor(author){
             const user = localStorage.getItem('user')
@@ -330,6 +304,11 @@ export default {
             localStorage.removeItem('user')
             this.$router.push('/login')
         
+        },
+        parseBlogContent(content){
+            let parsedContent = JSON.parse(content)
+            return parsedContent.content[parsedContent.content.length - 1].content[0].text
+
         }
 
     },

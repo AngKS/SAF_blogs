@@ -11,6 +11,8 @@ import Login from './pages/Login.vue'
 import Registeration from './pages/Registeration.vue'
 import Profile from './pages/Profile.vue'
 import NewBlog from './pages/NewBlog.vue'
+import BlogPost from './pages/BlogPost.vue'
+import page404 from './pages/404.vue'
 
 loadFonts()
 
@@ -26,6 +28,9 @@ const routes = [
   { path: '/login', component: Login,  },
   { path: '/register', component: Registeration },
   { path: '/new', component: NewBlog },
+  { path: '/edit/:id', component: NewBlog},
+  {path: '/post/:id', component: BlogPost},
+  { path: '/not-found', component: page404 },
 ]
 
 // 3. Create the router instance and pass the `routes` option
@@ -41,7 +46,6 @@ const compareToken = async (token) => {
   let response = await axios.post('http://localhost:3000/api/user/auth', {token: token})
 
   if (response.data.status === "success"){
-    console.log(response.data.message)
     let user = {
       id: response.data.message.id,
       username: response.data.message.username,
@@ -58,8 +62,8 @@ const compareToken = async (token) => {
 
 router.beforeEach(async (to, from, next) => {
 
-  const publicPages = ['/login', '/register', '/'];
-  const authRequired = !publicPages.includes(to.path);
+  const privatePages = ["/new", "/profile"];
+  const authRequired = privatePages.includes(to.path);
   const token = localStorage.getItem('token');
 
   if (authRequired && !token) {
