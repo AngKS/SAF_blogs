@@ -203,9 +203,8 @@ fastify.post("/api/blog/delete", async (req, res) => {
             let user_token = req.body.token
             let blog_id = req.body.blogUUID
             let userUUID = req.body.userUUID
-        
+            console.log("\n\nBODY\n\n", req.body)
             // authorize if token is fit for transaction
-            console.log(req.body)
             var userAuthenticated = null
             try {
                 jwt.verify(user_token, process.env.JWT_SECRET, (err, decoded) => {
@@ -218,7 +217,6 @@ fastify.post("/api/blog/delete", async (req, res) => {
                 })
                 console.log(userAuthenticated)
             } catch (err) {
-                console.log("HERE", err)
                 return res.send({ status: "error", message: err })
             }
             if (userAuthenticated !== null) {
@@ -228,7 +226,7 @@ fastify.post("/api/blog/delete", async (req, res) => {
                     return res.send({ status: "error", message: "Not Authorized" })
                 }
                 else{
-                    blog.deleteBlog(userUUID, blog_id, (err, result) => {
+                    blog.deleteBlogByID(blog_id, userUUID, (err, result) => {
                         if (err) {
                             res.send({ status: "error", message: err })
                         }

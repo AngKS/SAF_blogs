@@ -2,7 +2,7 @@
     <v-container
         fluid
         fill-height
-        class="d-flex dis-relative h-full"
+        class="d-flex dis-relative h-full bg-white"
     >
         <v-btn
             variant="tonal"
@@ -126,7 +126,7 @@ export default {
                             return 'What’s the title?'
                         }
 
-                        return 'Can you add some further context?'
+                        return 'This is the start of a Great Story...'
                     },
                 }),
             ],

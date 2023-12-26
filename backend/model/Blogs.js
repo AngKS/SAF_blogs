@@ -149,6 +149,7 @@ let Blog = {
 
     deleteBlogByID: (blog_id, userUUID, callback) => {
         let conn = db.getConnection();
+        console.log("I am here", blog_id, userUUID)
         conn.connect((err) => {
             if (err) {
                 return callback(err, null)
@@ -157,6 +158,7 @@ let Blog = {
             conn.query(sql, [blog_id, userUUID], (err, result) => {
                 conn.end()
                 if (err) {
+                    console.log(err)
                     return callback(err, null)
                 }
                 if (result !== null && result.length > 0){

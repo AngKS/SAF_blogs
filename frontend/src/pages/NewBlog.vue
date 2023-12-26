@@ -4,7 +4,16 @@
         fill-height
         class="d-flex h-full"
     > 
-        
+        <v-snackbar
+            v-model="snackbarOpen"
+            :timeout="3000"
+            class="text-center pointer"
+            @click="snackbarOpen = false"
+            location="top"
+            :color="snackbarColor"
+        >
+            {{ snackbarText }}
+        </v-snackbar>
         <v-row>
             <v-col
                 v-if="loading"
@@ -53,7 +62,8 @@
                     <v-btn
                         color="red"
                         icon="mdi-delete"
-
+                        @click="deleteContent"
+                        :loading="savingProgress"
                     ></v-btn>
                     <v-btn
                         color="black"
@@ -107,6 +117,9 @@ export default {
             savingProgress: false,
             loading: false,
             editorState: null,
+            snackbarColor: "black",
+            snackbarText: "",
+            snackbarOpen: false,
 
         }
     },
@@ -134,20 +147,33 @@ export default {
                     token: localStorage.getItem('token'),
                     userUUID: this.userInfo.id
                 }
-                await axios.post(URL, data).then(response => {
-                    if (response.data.status === "success"){
-                        console.log(response.data)
-                        this.$router.push('/')
-                    }
-                })
+                let response = await axios.post(URL, data)
+                if (response.status === 200 && response.statusText === "OK"){
+                    console.log(response)
+                    this.savingProgress = false
+                    
+                    this.snackbarText = "Blog deleted!"
+                    this.snackbarColor = "green"
+                    this.snackbarOpen = true
+                    this.$router.replace({path: '/'})
+
+                }
+                else{
+                    console.log(response)
+                    this.snackbarText = "Error deleting blog!"
+                    this.snackbarColor = "red"
+                    this.snackbarOpen = true
+
+                    this.savingProgress = false
+                }
             }
             else{
-                this.$router.push('/')
+                this.$router.replace({path: '/'})
             }
             this.savingProgress = false
         },
 
-        editorContentSaved() {
+        async editorContentSaved() {
             this.savingProgress = true
             // check if user is logged in
             const user = localStorage.getItem('user')
@@ -166,10 +192,27 @@ export default {
                         token: token,
                         userUUID: this.userInfo.id
                     }
-                    const response = axios.put(URL, data)
+                    const response = await axios.put(URL, data)
                     console.log(response)
-                    this.savingProgress = false
-                    return
+                    if (response.status === 200 && response.statusText === "OK"){
+                        this.savingProgress = false
+                        this.snackbarColor = "green"
+                        this.snackbarText = "Blog updated!"
+                        this.snackbarOpen = true
+                this.$router.replace({path: '/'})
+
+                        return
+                    }
+                    else{
+                        this.savingProgress = false
+                        this.snackbarColor = "red"
+                        this.snackbarText = "Error updating blog!"
+                        this.snackbarOpen = true
+                        return
+                    }
+                    
+
+                    
                 }
                 else{
                     const URL = "http://localhost:3000/api/blog/new"
@@ -178,10 +221,27 @@ export default {
                         content: blog_content,
                         token: token
                     }
-                    const response = axios.post(URL, data)
+                    const response = await axios.post(URL, data)
                     console.log(response)
-                    this.savingProgress = false
+                    if (response.status === 200 && response.statusText === "OK"){
+                        this.savingProgress = false
+                        this.snackbarColor = "green"
+                        this.snackbarText = "Blog created!"
+                        this.snackbarOpen = true
+                this.$router.replace({path: '/'})
+
+                        return
+                    }
+                    else{
+                        this.savingProgress = false
+                        this.snackbarColor = "red"
+                        this.snackbarText = "Error creating blog!"
+                        this.snackbarOpen = true
+                        return
+                    }
+
                 }
+
 
                 
             } else {
@@ -198,13 +258,12 @@ export default {
         this.userInfo = JSON.parse(localStorage.getItem('user'))
         // check if this is a new blog or an existing blog
 
-        let route = this.$route
-        if (route.params.id){
+        if (this.$route.params.id){
             // get blog content
-            console.log(route.params.id)
+            console.log(this.$route.params.id)
             const URL = "http://localhost:3000/api/blog"
             const data = {
-                blog_id: route.params.id
+                blog_id: this.$route.params.id
             }
             axios.post(URL, data).then(response => {
                 if (response.data.status === "success"){
