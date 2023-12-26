@@ -1,9 +1,9 @@
 require('dotenv').config();
 const fastify = require("fastify")({
-    logger: true
+    logger: false
 })
 const cors = require('@fastify/cors')
-const {verifyToken} = require("./model/auth/verifyToken")
+const jwt = require('jsonwebtoken');
 
 var user = require("./model/User")
 var blog = require("./model/Blogs")
@@ -110,13 +110,42 @@ fastify.post("/api/blog", (req, res) => {
 })
 
 // POST new Blog post
-fastify.post("/api/blog/new", (req, res) => {
+fastify.post("/api/blog/new", async (req, res) => {
 
     let blog_content = req.body.content
+    let blog_title = req.body.title
     let user_token = req.body.token
 
     // authorize if token is fit for transaction
-    const userAuthenticated = null
+
+    var userAuthenticated = null
+    try {
+        jwt.verify(user_token, process.env.JWT_SECRET, (err, decoded) => {
+            if (err) {
+                return callback(err, null)
+            }
+            else {
+                userAuthenticated = decoded
+            }
+        })
+        console.log(userAuthenticated)
+    } catch (err) {
+        console.log("HERE", err)
+        return res.send({ status: "error", message: err })
+    }
+    if (userAuthenticated !== null) {
+        console.log("Saving blog")
+        blog.addBlog(blog_title, blog_content, userAuthenticated.id, (err, result) => {
+            if (err) {
+                res.send({ status: "error", message: err })
+            }
+            res.send({ status: "success", message: result })
+
+        })
+    }
+    else {
+        res.send({ status: "error", message: "Not Authorized" })
+    }
 
 })
 

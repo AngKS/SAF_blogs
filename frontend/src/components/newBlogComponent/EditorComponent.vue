@@ -13,7 +13,7 @@
             <span>Save</span>
             <v-icon class="ml-2">mdi-content-save</v-icon>
         </v-btn>
-        <editor-content :editor="editor" />
+        <editor-content :editor="editor" style="width: 100%;" />
     </v-container>
     
 </template>
@@ -44,11 +44,13 @@
         }
 
     .another-absolute-button{
+        z-index: 10000000000;
         opacity: 0.6;
-        position: absolute;
+        position: fixed;
         bottom: 0;
         right: 0;
         margin: 1rem;
+        
     }
 
     .another-absolute-button:hover{
@@ -90,6 +92,14 @@ export default {
         save(){
             const content = this.editor.getJSON()
             this.$emit('editorSave', content)
+        }
+    },
+    watch: {
+        editorContent: {
+            handler: function (val, oldVal) {
+                console.log(val)
+            },
+            deep: true
         }
     },
     mounted() {

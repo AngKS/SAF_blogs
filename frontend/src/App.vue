@@ -15,23 +15,12 @@
 
         >Bloks.</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn
-          icon
-          :ripple="false"
-          @click="$router.push('/login')"
-        >
-          <v-avatar 
-              color="transparent"
-              @click="$router.push('/login')"
-            >
-              <v-icon icon="mdi-account-circle" size="32"></v-icon>
-            </v-avatar>
-        </v-btn>
+
 
       </v-toolbar>
     </v-app-bar>
     <v-main
-      class="d-flex"
+      class="d-flex bg-grey-lighten-3"
     >
       <router-view></router-view>
     </v-main>
@@ -52,6 +41,10 @@
     }
 
     .site-title:hover {
+      cursor: pointer;
+    }
+
+    .cursor-pointer{
       cursor: pointer;
     }
 
@@ -80,22 +73,33 @@ export default {
      async getUserAuth(){
         const URL = 'http://localhost:3000/api/user/auth'
         const token = localStorage.getItem('token')
+        
+        let response = await axios.post('http://localhost:3000/api/user/auth', { token: token })
 
-        const response = await axios.post(URL, {token: token})
-        if (response.data.success){
-          console.log(response.data)
+      if (response.data.status === "success") {
+        console.log(response.data.message)
+        let user = {
+          id: response.data.message.id,
+          username: response.data.message.username,
+          role: response.data.message.role,
+          expiresAt: response.data.message.exp
         }
-
+        localStorage.setItem('user', JSON.stringify(user))
+      }
+      
+        this.loading = false
+      return
      }
   },
 
-  mounted() {
+  async mounted() {
     // check if user is logged in
     
     const token = localStorage.getItem('token')
     if (token) {
       // check if token is valid
-      this.getUserAuth()
+      console.log("here")
+      await this.getUserAuth()
     }
 
     // check what is the current page

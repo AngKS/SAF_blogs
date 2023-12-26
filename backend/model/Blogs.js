@@ -1,4 +1,6 @@
 let db = require("./databaseConfigs")
+const jwt = require("jsonwebtoken")
+const { v4: uuidv4 } = require('uuid');
 
 
 let Blog = {
@@ -65,7 +67,45 @@ let Blog = {
                 return callback(null, result)
             })
         })
-    }
+    },
+
+    addBlog: (title, content, userUUID, callback) => {
+
+        let conn = db.getConnection();
+        conn.connect((err) => {
+            if (err) {
+                return callback(err, null)
+            }
+
+            // check if user exists
+            let sql = "SELECT * FROM users WHERE userUUID = ?"
+            conn.query(sql, [userUUID], (err, result) => {
+                if (err) {
+                    return callback(err, null)
+                }
+                if (result.length > 0) {
+                    console.log("User exists")
+                    // user exists
+                    let sql = "INSERT INTO blogs (blogUUID, blog_title, blog_content, author_user_id) VALUES (?, ?, ?, ?)"
+                    conn.query(sql, [uuidv4(), title, content, userUUID], (err, result) => {
+                        conn.end()
+                        if (err) {
+                            return callback(err, null)
+                        }
+                        console.log("\n\n ============\n\nBlog added successfully\n===================\n\n\n")
+                        return callback(null, { id: result.insertId, affectedRows: result.affectedRows, success: true });
+
+                    });
+                }
+                else {
+                    return callback("User does not exist", null)
+                }
+            })
+
+        });
+    },
+
+
 
 
 

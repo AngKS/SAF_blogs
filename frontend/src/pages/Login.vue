@@ -127,6 +127,20 @@ export default {
             return response
         },  
 
+        getUserObj(token){
+            const URL = 'http://localhost:3000/api/user/auth'
+            new Promise((resolve, reject) => {
+
+                axios.post(URL, {token: token}).then((response) => {
+                    resolve(response)
+                }).catch((error) => {
+                    reject(error)
+                })
+            }).then(response => {
+                console.log(response.data)
+            })
+        },
+
         async onSubmit() {
             if (!this.form) return
 
@@ -139,6 +153,7 @@ export default {
                 if (response.data.message.success){
                     console.log(response.data)
                     localStorage.setItem("token", response.data.message.token)
+                    this.getUserObj(response.data.message.token)
                     this.$router.push("/")
                 }
                 else{

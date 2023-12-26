@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken');
-var config = require('../config');
+
 
 function verifyToken(token) {
 
@@ -13,7 +13,7 @@ function verifyToken(token) {
             }
         }
     } else {
-        jwt.verify(token, config, function (err, decoded) {//verify token
+        jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {//verify token
             if (err) {
                 return {
                     statusCode: 403,

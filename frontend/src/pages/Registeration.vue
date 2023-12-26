@@ -4,6 +4,14 @@
         fill-height
         class="d-flex flex-column justify-center align-center"
     >
+        <v-snackbar
+            v-model="snackbarOpen"
+            :timeout="3000"
+            class="text-center pointer"
+            @click="snackbarOpen = false"
+        >
+            {{ snackbarText  }}
+        </v-snackbar>
         <v-card
             class="mx-auto"
             width="700"
@@ -49,6 +57,18 @@
                         clearable
                         label="Password"
                         placeholder="Enter your password"
+                        type="password"
+                        ></v-text-field>
+
+                        <v-text-field
+                        v-model="confirmPassword"
+                        :readonly="loading"
+                        :rules="[required, 
+                            () => this.password === this.confirmPassword || 'Passwords do not match']"
+                        clearable
+                        label="Confirm Password"
+                        placeholder="Enter your password"
+                        type="password"
                         ></v-text-field>
 
                         <v-btn
@@ -91,6 +111,7 @@
 </style>
 
 <script>
+import axios from 'axios'
 export default {
     name: 'RegistrationPage',
     props: {
@@ -102,18 +123,45 @@ export default {
             form: false,
             email: null,
             password: null,
+            confirmPassword: null,
             loading: false,
             username: null,
+            snackbarOpen: false,
         }
     },
     methods: {
-        onSubmit() {
+        async onSubmit() {
             if (!this.form) return
 
             this.loading = true
 
-            setTimeout(() => (this.loading = false), 2000)
+            console.log(
+                `Username: ${this.username}\nEmail: ${this.email}\nPassword: ${this.password}`
+            
+            )
+
+            let request = await axios.post('http://localhost:3000/api/register', {
+                username: this.username,
+                email: this.email,
+                password: this.password,
+            })
+
+            if (request.data.status === "success"){
+                this.snackbarText = "Registration successful!"
+                this.snackbarOpen = true
+                setTimeout(() => {
+                    this.snackbarOpen = false
+                    this.loading = false
+                    this.$router.push('/login')
+
+                }, 2000)
+
+            } else {
+                this.$router.push('/register')
+            }
+
         },
+
         required(v) {
             return !!v || 'Field is required'
         },

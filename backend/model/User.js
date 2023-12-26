@@ -1,7 +1,8 @@
-`let db = require("./databaseConfigs")
+let db = require("./databaseConfigs")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const saltRounds = 10;
+const { v4: uuidv4 } = require('uuid');
 
 
 let User = {
@@ -18,8 +19,8 @@ let User = {
                     return callback(errHashing, null)
                 }
                 else{
-                    let sql = "INSERT INTO users (email, username, user_password, user_role) VALUES (?, ?, ?, ?)"
-                    conn.query(sql, [email, uername, password, role], (err, result) => {
+                    let sql = "INSERT INTO users (email, username, user_password, user_role, userUUID) VALUES (?, ?, ?, ?, ?)"
+                    conn.query(sql, [email, uername, password, role, uuidv4()], (err, result) => {
                         conn.end()
                         if (err) {
                             return callback(err, null)
@@ -58,9 +59,9 @@ let User = {
                                 else{
                                     if (res){
                                         let payload = {
-                                            id: result[0].user_id,
+                                            id: result[0].userUUID,
                                             role: result[0].user_role,
-                                            username: result[0].username
+                                            username: result[0].username,
 
                                         }
                                         let token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "1h"})
