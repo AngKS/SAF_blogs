@@ -78,7 +78,7 @@
                 <EditorComponent
                     class=""
                     style="flex-grow: 1;"
-                    :editorContent="editorContent"
+                    :editorContentText="editorContent"
                     :editorEditable="editorEditable"
                     :saveBtnLoading="savingProgress"
                     @editorSave="(content) => {
@@ -112,7 +112,7 @@ export default {
     },
     data() {
         return {
-            editorContent: "",
+            editorContent: "<h1>Title</h1><p>The start to an Epic Adventure...</p>",
             editorEditable: true,
             userInfo: null,
             savingProgress: false,

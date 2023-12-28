@@ -59,6 +59,14 @@
         cursor: pointer;
     }
 
+    .tiptap .is-empty::before {
+        content: attr(data-placeholder);
+        float: left;
+        color: #adb5bd;
+        pointer-events: none;
+        height: 0;
+    }
+
 </style>
 
 
@@ -66,7 +74,12 @@
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Heading from '@tiptap/extension-heading'
+import Document from '@tiptap/extension-document'
 import Placeholder from '@tiptap/extension-placeholder'
+
+const CustomDocument = Document.extend({
+    content: 'heading block*',
+})
 
 export default {
     components: {
@@ -79,7 +92,7 @@ export default {
         }
     },
     props: {
-        editorContent: {
+        editorContentText: {
             type: String,
             default: "",
         },
@@ -112,9 +125,12 @@ export default {
     },
     mounted() {
         this.editor = new Editor({
-            content: this.editorContent,
+            content: this.editorContentText,
             extensions: [
-                StarterKit,
+                CustomDocument,
+                StarterKit.configure({
+                    document: false,
+                }),
                 Heading.configure({
                     levels: [1, 2, 3],
                     placeholder: 'Title',
@@ -122,11 +138,12 @@ export default {
                 Placeholder.configure({
                     emptyEditorClass: 'is-editor-empty',
                     placeholder: ({ node }) => {
+                        console.log(node)
                         if (node.type.name === 'heading') {
-                            return 'What’s the title?'
+                            return "A Great Title"
                         }
 
-                        return 'This is the start of a Great Story...'
+                        return 'Start on your Epic journey...'
                     },
                 }),
             ],
