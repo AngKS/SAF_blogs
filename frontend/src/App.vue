@@ -1,5 +1,7 @@
 <template>
-  <v-app>
+  <v-app
+  style="scroll-behavior: smooth; height:100%;"
+  >
     <v-app-bar
       app
       flat
@@ -20,53 +22,11 @@
     </v-app-bar>
     <v-main
       class="d-flex bg-grey-lighten-3"
+      height="100%"
       style="scroll-behavior: smooth;"
     >
       <router-view></router-view>
     </v-main>
-    <v-footer
-      flat
-      color="grey-lighten-2 d-flex flex-column justify-end align-center"
-    >      
-      <v-toolbar
-        flat
-        color="transparent"
-        class="d-flex justify-center"
-      >
-        <v-toolbar-title
-          class="site-title"
-          @click="() => {
-            scrollToTop()
-            $router.push('/')
-          }"
-
-        >
-        <span>Bloks.</span>
-        <span class="text-subtitle-2 text-grey-darken-2">Created by <a href="https://www.github.com/angks" target="_blank" class="text-grey-darken-2" style="text-decoration: none;">AKS</a></span>
-
-        </v-toolbar-title>
-        <v-toolbar-items>
-          <!-- link to github page -->
-          <v-btn
-            icon="mdi-github"
-            class="cursor-pointer"
-            href="https://github.com/AngKS/SAF_blogs"
-            target="_blank"
-            
-          >
-          </v-btn>
-
-          
-          <v-btn
-            icon="mdi-account-circle"
-            class="cursor-pointer"
-            @click="$router.push('/login')"
-          >
-          </v-btn>
-        </v-toolbar-items>
-
-      </v-toolbar>
-    </v-footer>
   </v-app>
 </template>
 

@@ -2,7 +2,7 @@
     <v-container
         fill-height
         fluid
-        class="dis-relative"
+        class="dis-relative d-flex"
     >
         <v-btn
             v-if="newPostBtn"
@@ -13,22 +13,45 @@
             @click="$router.push('/new')"
         >
         </v-btn>
-        <v-row>
+        <v-row
+                v-if="blogLoading"
+
+        >
+            <v-col
+                cols="12"
+                md="12"
+                height="100%"
+                class="d-flex justify-center align-center"
+            >
+            <v-progress-circular
+                        indeterminate
+                        color="black"
+                        size="large"
+                        class="mx-auto"
+                    ></v-progress-circular>
+            </v-col>
+        </v-row>
+        <v-row v-else>
+
             <v-col
                 cols="12"
                 md="6"
-                class="ml-auto d-flex justify-center align-start"
+                class="ml-auto"
             >                
-                <v-progress-circular
-                    v-if="blogLoading"
-                    indeterminate
-                    color="black"
-                    size="large"
-                    class="mx-auto"
-                ></v-progress-circular>
-
+                <v-toolbar
+                    class="bg-transparent"
+                    density="compact"
+                    flat
+                >
+                    <v-toolbar-title class="font-weight-bold text-decoration-underline">All Blogs</v-toolbar-title>
+                    <v-toolbar-items>
+                        <v-btn
+                            
+                            icon="mdi-filter-outline"
+                        ></v-btn>
+                    </v-toolbar-items>
+                </v-toolbar>
                 <v-list
-                    v-else
                     three-line
                     height="100%"
                     class="mx-auto bg-transparent "
@@ -114,12 +137,18 @@
             <v-col
                 cols="12"
                 md="3"
-                class="mr-auto d-flex justify-center align-start"
+                class="mr-auto d-flex flex-column justify-start align-center"
             >
+                <v-toolbar
+                    density="compact"
+                    class="mb-2"
+                >
+                    
+                </v-toolbar>
                 <v-card
                     width="75%"
                     height="fit-content"
-                    class=""
+                    class="mb-3"
                     flat
                     
                 >
@@ -159,6 +188,31 @@
                         
                     </v-card-title>
                 </v-card>
+                <v-card
+                    width="75%"
+                    height="fit-content"
+                    class="mb-3 py-2"
+                    flat
+                >
+                    <v-card-subtitle class="text-center">Created by AKS</v-card-subtitle>
+                    <v-card-actions
+                        class="d-flex justify-center align-center"
+                    >
+                        
+                        <v-btn
+                            icon="mdi-github"
+                            href="https://github.com/AngKS/SAF_blogs"
+                            target="_blank"
+                        ></v-btn>
+                        <v-btn
+                            icon="mdi-linkedin"
+                            href="https://www.linkedin.com/in/kahshinang"
+                            target="_blank"
+                        ></v-btn>
+
+                    </v-card-actions>
+                </v-card>
+
             </v-col>
         </v-row>
     </v-container>
@@ -303,6 +357,10 @@ export default {
             if (response.data.status === "success"){
                 let result = this.parseBlogs(response.data.message)
                 this.blogLoading = false;
+            }
+            else{
+                this.blogLoading = false;
+                this.$router.push('/not-found')
             }
         },
         authUserIsAuthor(author){
