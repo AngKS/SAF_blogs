@@ -13,20 +13,21 @@
             {{ snackbarText }}
         </v-snackbar>
         <v-card
+            v-if="!loggedIn"
             class="mx-auto"
             width="700"
             height="500"
             flat
 
         >
-            <v-card-title
+            <!-- <v-card-title
                 class="site-title text-center"
             >
                 Bloks.
-            </v-card-title>
-            <v-card-subtitle
-                class="text-center text-h5"
-            >Welcome Back!</v-card-subtitle>
+            </v-card-title> -->
+            <v-card-title
+                class="text-center site-title pt-4 my-2"
+            >Welcome Back!</v-card-title>
             <v-card-text>
                 <v-form
                     ref="form"

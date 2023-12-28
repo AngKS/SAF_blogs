@@ -259,11 +259,27 @@ export default {
                     console.log("user found")
                 }
                 else {
+                    // get user info
+                    const URL = 'http://localhost:3000/api/user/auth'
+                    new Promise((resolve, reject) => {
+                        axios.post(URL, {token: token}).then((response) => {
+                            resolve(response)
+                        }).catch((error) => {
+                            reject(error)
+                        })
+                    }).then(response => {
+                        console.log(response.data)
+                        if (response.data.status === "success"){
+                            this.user = response.data.message
+                            localStorage.setItem('user', JSON.stringify(this.user))
+                        }
+                    })
                     console.log("user now found")
                 }
                 return true
                 
             }
+            console.log(token)
             return false
         },
 
@@ -318,7 +334,8 @@ export default {
         
     },
     mounted() {
-        if (this.isUserAuthenticated()){
+        const userAuth = this.isUserAuthenticated()
+        if (userAuth){
             this.newPostBtn = true
         }
         else{

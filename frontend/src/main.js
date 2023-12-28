@@ -66,6 +66,10 @@ router.beforeEach(async (to, from, next) => {
   const authRequired = privatePages.includes(to.path);
   const token = localStorage.getItem('token');
 
+  // scroll window to top
+  window.scrollTo(0, 0);
+  
+
   if (authRequired && !token) {
     return next('/login');
   }

@@ -135,11 +135,6 @@ export default {
 
             this.loading = true
 
-            console.log(
-                `Username: ${this.username}\nEmail: ${this.email}\nPassword: ${this.password}`
-            
-            )
-
             let request = await axios.post('http://localhost:3000/api/register', {
                 username: this.username,
                 email: this.email,

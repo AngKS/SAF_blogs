@@ -3,6 +3,7 @@
         fill-height
         fluid
         class="d-flex"
+        style="min-height: 100vh;"
     >
         <v-row>
             <v-col
@@ -28,54 +29,80 @@
             >
                 
                 <v-container
-                    class="d-flex flex-column"
+                    class="d-flex flex-column px-0"
                     fill-height
                     fluid
                 >
-                    <v-card
-                        class="mx-auto mb-5 dis-relative"
-                        width="100%"
-                        height="100%"
-                        flat
-                    >
-                        <v-btn
-                            v-if="userInfo !== null && userInfo.username === blog?.username"
-                            icon="mdi-pencil"
-                            style="position: fixed; bottom: 0; right: 0; margin: 1rem;"
-                            @click="$router.push(`/edit/${blog?.blogUUID}`)"
-
+                        <v-toolbar
+                            class="px-2 bg-transparent mb-5"
+                            flat
+                            
                         >
-                        </v-btn>
-                        <v-card-title class="px-0 font-weight-black text-h5 d-flex">
-                            {{ blog_title }}
-                            <v-spacer></v-spacer>
-                                <v-btn
-                                    icon="mdi-arrow-left"
-                                    @click="$router.push('/')"
-                                    flat
-                                ></v-btn>
-                        </v-card-title>
-                        <v-card-subtitle
-                            class="d-flex align-center justify-start px-0"
-                        >
-                            <v-avatar
-                                size="50"
-                                color="grey-lighten-3"
+                            <v-toolbar-items
+                                class="pa-0 ma-0"
                             >
-                                <v-img
-                                    alt="Avatar"
-                                    :lazy-src="blog?.username !== null ? userImageSrc(blog.username) : 'https://www.robohash.org/avatar1'"
-                                    :src="blog?.username !== null ? userImageSrc(blog.username) : 'https://www.robohash.org/avatar1'"
-                                ></v-img>
-                            </v-avatar>
-                            <div class="d-flex flex-column ml-2">
-                                <span class="font-weight-medium text-subtitle-2">{{ blog?.username }}</span>
-                                <span class="font-weight-light font-italic">published {{ formatDate(blog?.created_at) }}</span>
-                            </div>
-                        </v-card-subtitle>
+                                <v-app-bar-nav-icon
+                                    class=""
+                                    @click="$router.push('/')"
+                                    icon="mdi-arrow-left"
+                                ></v-app-bar-nav-icon>
+                            </v-toolbar-items>
+                                
+                                <v-toolbar-title
+                                    class="text-h4 text-start font-weight-bold pl-0"
+                                >
+                                    {{ blog_title }}
+                                </v-toolbar-title>
+                                <v-toolbar-items>
+                                    <v-card-subtitle
+                                class="d-flex align-center justify-start px-0"
+                            >
+                                <v-avatar
+                                    size="50"
+                                    color="grey-lighten-3"
+                                >
+                                    <v-img
+                                        alt="Avatar"
+                                        :lazy-src="blog?.username !== null ? userImageSrc(blog.username) : 'https://www.robohash.org/avatar1'"
+                                        :src="blog?.username !== null ? userImageSrc(blog.username) : 'https://www.robohash.org/avatar1'"
+                                    ></v-img>
+                                </v-avatar>
+                                <div class="d-flex flex-column ml-2">
+                                    <span class="font-weight-medium text-subtitle-2">{{ blog?.username }}</span>
+                                    <span class="font-weight-light font-italic">published {{ formatDate(blog?.last_updated) }}</span>
+                                </div>
+                            </v-card-subtitle>
 
-                    </v-card>
-                    <div style="flex-grow: 1;" v-if="blog !== null" v-html="blogOutput"></div>
+                                    <v-btn
+                                        v-if="userInfo !== null && userInfo.username === blog?.username"
+                                        icon="mdi-pencil"
+                                        flat
+                                        size="large"
+                                        @click="$router.push(`/edit/${blog?.blogUUID}`)"
+
+                                    >
+                                    </v-btn>
+                                    
+                                </v-toolbar-items>
+                        </v-toolbar>
+
+                        
+                    <div class="px-2" style="flex-grow: 1;" v-if="blog !== null" v-html="blogOutput"></div>
+                    <!-- if theres no blog content -->
+                    <div v-else class="d-flex justify-center align-center" style="flex-grow: 1;">
+                        <span class="text-h5 font-weight-bold">No blog content</span>
+                        <!-- navigate home -->
+                        <v-btn
+                            class="ml-2"
+                            color="black"
+                            @click="$router.push('/')"
+                        >
+
+                            <v-icon>mdi-home</v-icon>
+                            <span>Home</span>
+                        </v-btn>
+
+                    </div>
                 </v-container>
             </v-col>    
         </v-row>

@@ -2,6 +2,7 @@
     <v-container
         fluid
         fill-height
+        style="min-height: 100vh;"
         class="d-flex h-full"
     > 
         <v-snackbar
@@ -42,7 +43,6 @@
                     class="d-flex align-center"
                 >
                     <v-toolbar-icon
-
                     >
                         <v-icon
                             size="45"
@@ -58,18 +58,19 @@
                     >
                         {{ userInfo !== null ? userInfo.username : "Bloks." }}
                     </v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                        color="red"
-                        icon="mdi-delete"
-                        @click="deleteContent"
-                        :loading="savingProgress"
-                    ></v-btn>
-                    <v-btn
-                        color="black"
-                        text
-                        @click="$router.push('/')"
-                    >Back</v-btn>
+                    <v-toolbar-items>
+                        <v-btn
+                            color="red"
+                            icon="mdi-delete"
+                            @click="deleteContent"
+                            :loading="savingProgress"
+                        ></v-btn>
+                        <v-btn
+                            color="black"
+                            text
+                            @click="$router.push('/')"
+                        >Back</v-btn>
+                    </v-toolbar-items>
                 </v-toolbar>
                 <v-divider
                     thickness="2"
@@ -180,74 +181,92 @@ export default {
             const token = localStorage.getItem('token')
             const blog_content = JSON.stringify(this.editorContent)
             
-            if (user){
-                const route = this.$route
-                if (this.editorState === "updateBlog" && route.params.id){
-                    // update existing blog
-                    const URL = "http://localhost:3000/api/blog/update"
-                    const data = {
-                        blogUUID: this.$route.params.id,
-                        title: this.getTitle(),
-                        content: blog_content,
-                        token: token,
-                        userUUID: this.userInfo.id
-                    }
-                    const response = await axios.put(URL, data)
-                    console.log(response)
-                    if (response.status === 200 && response.statusText === "OK"){
-                        this.savingProgress = false
-                        this.snackbarColor = "green"
-                        this.snackbarText = "Blog updated!"
-                        this.snackbarOpen = true
-                this.$router.replace({path: '/'})
-
-                        return
-                    }
-                    else{
-                        this.savingProgress = false
-                        this.snackbarColor = "red"
-                        this.snackbarText = "Error updating blog!"
-                        this.snackbarOpen = true
-                        return
-                    }
-                    
-
-                    
-                }
-                else{
-                    const URL = "http://localhost:3000/api/blog/new"
-                    const data = {
-                        title: this.getTitle(),
-                        content: blog_content,
-                        token: token
-                    }
-                    const response = await axios.post(URL, data)
-                    console.log(response)
-                    if (response.status === 200 && response.statusText === "OK"){
-                        this.savingProgress = false
-                        this.snackbarColor = "green"
-                        this.snackbarText = "Blog created!"
-                        this.snackbarOpen = true
-                this.$router.replace({path: '/'})
-
-                        return
-                    }
-                    else{
-                        this.savingProgress = false
-                        this.snackbarColor = "red"
-                        this.snackbarText = "Error creating blog!"
-                        this.snackbarOpen = true
-                        return
-                    }
-
-                }
-
-
-                
-            } else {
-                // redirect to login page
-                this.$router.push('/login')
+            // check if there is content
+            if (blog_content === ""){
+                this.savingProgress = false
+                this.snackbarColor = "red"
+                this.snackbarText = "Error creating blog! No content!"
+                this.snackbarOpen = true
+                return
             }
+            else{
+                if (user) {
+                    const route = this.$route
+                    if (this.editorState === "updateBlog" && route.params.id) {
+                        // update existing blog
+                        const URL = "http://localhost:3000/api/blog/update"
+                        const data = {
+                            blogUUID: this.$route.params.id,
+                            title: this.getTitle(),
+                            content: blog_content,
+                            token: token,
+                            userUUID: this.userInfo.id
+                        }
+                        const response = await axios.put(URL, data)
+                        console.log(response)
+                        if (response.status === 200 && response.statusText === "OK") {
+                            this.savingProgress = false
+                            this.snackbarColor = "green"
+                            this.snackbarText = "Blog updated!"
+                            this.snackbarOpen = true
+                            setTimeout(() => {
+                                this.$router.replace({ path: '/' })
+
+                            }, 1500);
+
+                            return
+                        }
+                        else {
+                            this.savingProgress = false
+                            this.snackbarColor = "red"
+                            this.snackbarText = "Error updating blog!"
+                            this.snackbarOpen = true
+                            return
+                        }
+
+
+
+                    }
+                    else {
+                        const URL = "http://localhost:3000/api/blog/new"
+                        const data = {
+                            title: this.getTitle(),
+                            content: blog_content,
+                            token: token
+                        }
+                        const response = await axios.post(URL, data)
+                        console.log(response)
+                        if (response.status === 200 && response.statusText === "OK") {
+                            this.savingProgress = false
+                            this.snackbarColor = "green"
+                            this.snackbarText = "Blog created!"
+                            this.snackbarOpen = true
+                            setTimeout(() => {
+                                this.$router.replace({ path: '/' })
+
+                            }, 1500);
+
+                            return
+                        }
+                        else {
+                            this.savingProgress = false
+                            this.snackbarColor = "red"
+                            this.snackbarText = "Error creating blog!"
+                            this.snackbarOpen = true
+                            return
+                        }
+
+                    }
+
+
+
+                } else {
+                    // redirect to login page
+                    this.$router.push('/login')
+                }
+            }
+
+            
 
         }
             
@@ -277,7 +296,7 @@ export default {
         else{
             // create new blog
             this.editorContent = {
-                "time": 1619472000000,
+                "time": new Date().getTime(),
                 "blocks": [
                     {
                         "type": "header",
