@@ -9,7 +9,7 @@
             icon="mdi-plus"
             color="black"
             class="absolute-btn rounded-circle"
-            style="position: fixed;"
+            style="position: fixed;z-index: 1000000000;"
             @click="$router.push('/new')"
         >
         </v-btn>
@@ -20,6 +20,7 @@
             <v-col
                 cols="12"
                 md="12"
+                sm="12"
                 height="100%"
                 class="d-flex justify-center align-center"
             >
@@ -44,12 +45,12 @@
                     flat
                 >
                     <v-toolbar-title class="font-weight-bold text-decoration-underline">All Blogs</v-toolbar-title>
-                    <v-toolbar-items>
+                    <!-- <v-toolbar-items>
                         <v-btn
                             
                             icon="mdi-filter-outline"
                         ></v-btn>
-                    </v-toolbar-items>
+                    </v-toolbar-items> -->
                 </v-toolbar>
                 <v-list
                     three-line
@@ -58,7 +59,7 @@
                     
                 >
                     <v-list-item
-                        v-for="(blog_item, i) in blogPosts"
+                        v-for="(blog_item, i) in sortedBlogs"
                         :key="i"
                         v-slot="{ active, toggle }"
                         class="px-0 bg-white mb-1"
@@ -68,6 +69,7 @@
                             flat
                             color="transparent"
                             class="dis-relative"
+                            
                         >
 
                             <v-card-subtitle
@@ -75,52 +77,18 @@
                             >
                                 <span>{{ blog_item.author }} • {{ formatDate(blog_item.date) }}</span>
                                 <v-spacer></v-spacer>
-                                <v-menu
-                                    v-if="isUserAuthenticated && user !== null"
-                                    :close-on-content-click="false"
-                                    :nudge-right="40"
-                                    open-on-hover
-                                    transition="scale-transition"
-                                    offset-y
-                                    close-delay="200"
-                                    min-width="auto"
-                                >
-                                    <template v-slot:activator="{props}">
-                                        <v-btn
-                                            icon="mdi-dots-horizontal-circle-outline"
-                                            v-bind="props"
-                                            flat
-                                            size="24"
-                                            :ripple="false"
-                                        ></v-btn>
-                                    </template>
-                                    <v-list>
-                                        <v-list-item
-                                            v-for="(item, i) in blogPostMenu"
-                                            :key="i"
-                                            class=""
-                                        >
-                                            <v-btn
-                                                :disabled="!authUserIsAuthor(blog_item)"
-                                                @click="item.action"
-                                                class="text-left"
-                                                width="100%"
-                                                flat
-                                            >{{ item.title }}</v-btn>
-                                            
-                                        </v-list-item>
-                                    </v-list>
-                                </v-menu>
+                                
                             </v-card-subtitle>
                             
                             <v-card-title
                                 class="cursor-pointer"
-                                @click="$router.push(`/post/${blog_item.uuid}`)"
-
+                                @click="getBlogByID(blog_item.uuid)"
+                                :ripple="false"
                             >{{ blog_item.title }}</v-card-title>
                             <v-card-text
                                 class="cursor-pointer" 
-                                @click="$router.push(`/post/${blog_item.uuid}`)"
+                                @click="getBlogByID(blog_item.uuid)"
+                                :ripple="false"
                             >
                                 <!-- restrict to 2 lines of words thereafter ... -->
                                 <span
@@ -137,7 +105,8 @@
             <v-col
                 cols="12"
                 md="3"
-                class="mr-auto d-flex flex-column justify-start align-center"
+                sm="0"
+                class="mr-auto d-flex flex-column justify-start align-center hidden-sm-and-down"
             >
                 <v-toolbar
                     density="compact"
@@ -146,7 +115,7 @@
                     
                 </v-toolbar>
                 <v-card
-                    width="75%"
+                    width="100%"
                     height="fit-content"
                     class="mb-3"
                     flat
@@ -189,7 +158,7 @@
                     </v-card-title>
                 </v-card>
                 <v-card
-                    width="75%"
+                    width="100%"
                     height="fit-content"
                     class="mb-3 py-2"
                     flat
@@ -273,7 +242,8 @@ export default {
             items: [],
             newPostBtn: false,
             blogLoading: false,
-            user: null
+            user: null,
+            sortedBlogs: []
         }
     },
     methods: {
@@ -381,14 +351,55 @@ export default {
         },
         parseBlogContent(content){
             let parsedContent = JSON.parse(content)
+            if (parsedContent.content[(parsedContent.content.length - 1)].content == null || parsedContent.content[(parsedContent.content.length - 1)].content == undefined){
+                return ""
+            }
+            else{
             return parsedContent.content[parsedContent.content.length - 1].content[0].text
 
+            }
+
+        },
+
+        sortBlogsBy(method){
+            if (method == "date") {
+                this.blogPosts = [...this.blogPosts].sort((a, b) => {
+                    return new Date(b.date) - new Date(a.date)
+                })
+            }
+            else if (method == "author") {
+                this.blogPosts = [...this.blogPosts].sort((a, b) => {
+                    return a.author.localeCompare(b.author)
+                })
+            }
+            else if (method == "title") {
+                this.blogPosts = [...this.blogPosts].sort((a, b) => {
+                    return a.title.localeCompare(b.title)
+                })
+            }
+        },
+
+        async getBlogByID(id){
+            const response = await axios.get(`http://localhost:3000/api/blog/${id}`)
+            if (response){
+                if (response.data.status === "success"){
+                    // console.log(response.data.message)
+                    this.$router.push(`/post/${id}`)
+                }
+
+            }
         }
 
     },
     watch: {
     //    watch user
-        
+        blogPosts: {
+            handler: function (val, oldVal) {
+                console.log('blogPosts changed')
+                this.sortedBlogs = [...this.blogPosts]
+            },
+            deep: true
+        },
         
     },
     mounted() {
@@ -401,6 +412,8 @@ export default {
         }
 
         this.load()
+
+        this.sortBlogsBy("date")
     },
 }
 </script>

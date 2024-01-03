@@ -109,6 +109,18 @@ fastify.post("/api/blog", (req, res) => {
     })
 })
 
+fastify.get("/api/blog/:blog_id", (req, res) => {
+    let blog_id = req.params.blog_id
+    console.log(req.body)
+    blog.getBlogByID(blog_id, (err, result) => {
+        if (err) {
+            res.send({ status: "error", message: err })
+        }
+        res.send({ status: "success", message: result })
+
+    })
+})
+
 // POST new Blog post
 fastify.post("/api/blog/new", async (req, res) => {
 

@@ -2,7 +2,7 @@
     <v-container
         fluid
         fill-height
-        class="d-flex flex-column justify-center align-center"
+        class="d-flex justify-center align-start"
     >
         <v-snackbar
             v-model="snackbarOpen"
@@ -12,70 +12,83 @@
         >
             {{ snackbarText }}
         </v-snackbar>
-        <v-card
-            v-if="!loggedIn"
-            class="mx-auto"
-            width="700"
-            height="500"
-            flat
-
+        <v-row
+            class=""
         >
-            <!-- <v-card-title
+
+            <v-col
+                cols="12"
+                md="10"
+                class="mx-auto"
+            >
+                <v-card
+                v-if="!loggedIn"
+                class="mx-auto"
+                width="100%"
+                max-width="700"
+                height="fit-content"
+                flat
+
+            >
+                <!-- <v-card-title
                 class="site-title text-center"
             >
                 Bloks.
             </v-card-title> -->
-            <v-card-title
-                class="text-center site-title pt-4 my-2"
-            >Welcome Back!</v-card-title>
-            <v-card-text>
-                <v-form
-                    ref="form"
-                    v-model="form"
-                    lazy-validation
-                    @submit.prevent="onSubmit"
-                    v-auto-animate
-                >
-                    <v-text-field
-                        v-model="username"
-                        :readonly="loading"
-                        :rules="[required]"
-                        class="mb-2"
-                        clearable
-                        label="Username"
-                        ></v-text-field>
-
+                <v-card-title
+                    class="text-center site-title pt-4 my-2"
+                >Welcome Back!</v-card-title>
+                <v-card-text>
+                    <v-form
+                        ref="form"
+                        v-model="form"
+                        lazy-validation
+                        @submit.prevent="onSubmit"
+                        v-auto-animate
+                    >
                         <v-text-field
-                        v-model="password"
-                        :readonly="loading"
-                        :rules="[required]"
-                        clearable
-                        label="Password"
-                        type="password"
-                        placeholder="Enter your password"
-                        ></v-text-field>
+                            v-model="username"
+                            :readonly="loading"
+                            :rules="[required]"
+                            class="mb-2"
+                            clearable
+                            label="Username"
+                            ></v-text-field>
 
-                        <v-btn
-                            :hidden="!form"
-                            :loading="loading"
-                            block
-                            color="black"
-                            size="large"
-                            type="submit"
-                            variant="elevated"
-                            v-auto-animate
-                            >
-                            Sign In
-                        </v-btn>
-                </v-form>
-            </v-card-text>
-            <v-card-actions>
-                <p>
-                    Don't have an account? <router-link to="/register">Sign Up</router-link>
-                </p>
-            </v-card-actions>
+                            <v-text-field
+                            v-model="password"
+                            :readonly="loading"
+                            :rules="[required]"
+                            clearable
+                            label="Password"
+                            type="password"
+                            placeholder="Enter your password"
+                            ></v-text-field>
 
-        </v-card>
+                            <v-btn
+                                :hidden="!form"
+                                :loading="loading"
+                                block
+                                color="black"
+                                size="large"
+                                type="submit"
+                                variant="elevated"
+                                v-auto-animate
+                                >
+                                Sign In
+                            </v-btn>
+                    </v-form>
+                </v-card-text>
+                <v-card-actions>
+                    <p>
+                        Don't have an account? <router-link to="/register">Sign Up</router-link>
+                    </p>
+                </v-card-actions>
+
+            </v-card>
+            </v-col>
+        </v-row>
+        
     </v-container>
 </template>
 

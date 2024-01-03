@@ -12,12 +12,19 @@
         class="d-flex justify-center"
       >
         <v-toolbar-title
-          class="site-title text-center"
+          class="site-title text-left"
           @click="$router.push('/')"
 
         >Bloks.</v-toolbar-title>
 
-
+        <v-toolbar-items>
+          <v-btn
+            icon="mdi-account-circle"
+            size="large"
+            @click="$router.push('/login')"
+            class="hidden-sm-and-up"
+          ></v-btn>
+        </v-toolbar-items>
       </v-toolbar>
     </v-app-bar>
     <v-main
@@ -91,7 +98,10 @@ export default {
         }
         localStorage.setItem('user', JSON.stringify(user))
       }
-      
+      else{
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+      }
         this.loading = false
       
      },

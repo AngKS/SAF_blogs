@@ -9,7 +9,6 @@ import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
 import Home from './pages/Home.vue'
 import Login from './pages/Login.vue'
 import Registeration from './pages/Registeration.vue'
-import Profile from './pages/Profile.vue'
 import NewBlog from './pages/NewBlog.vue'
 import BlogPost from './pages/BlogPost.vue'
 import page404 from './pages/404.vue'
@@ -24,7 +23,6 @@ const About = { template: '<div>About</div>' }
 
 const routes = [
   { path: '/', component: Home },
-  { path: '/profile', component: Profile },
   { path: '/login', component: Login,  },
   { path: '/register', component: Registeration },
   { path: '/new', component: NewBlog },
@@ -62,7 +60,7 @@ const compareToken = async (token) => {
 
 router.beforeEach(async (to, from, next) => {
 
-  const privatePages = ["/new", "/profile"];
+  const privatePages = ["/new"];
   const authRequired = privatePages.includes(to.path);
   const token = localStorage.getItem('token');
 

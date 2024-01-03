@@ -23,6 +23,7 @@ let User = {
                     conn.query(sql, [email, uername, password, role, uuidv4()], (err, result) => {
                         conn.end()
                         if (err) {
+                            console.log(err)
                             return callback(err, null)
                         }
                         console.log("User added successfully")

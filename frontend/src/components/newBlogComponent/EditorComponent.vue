@@ -14,7 +14,7 @@
             <span>Save</span>
             <v-icon class="ml-2">mdi-content-save</v-icon>
         </v-btn>
-        <editor-content :editor="editor" style="width: 100%;" />
+        <editor-content  :editor="editor" style="width: 100%;" />
     </v-container>
     
 </template>
@@ -24,7 +24,7 @@
     .tiptap{
         flex-grow: 1;
         height: 100%;
-        max-width: 63vw;
+        max-width: 85vw;
     }
 
     /* remove blue border when selected */
@@ -43,6 +43,10 @@
         height: 0;  
         pointer-events: none;
         }
+
+    .dis-relative{
+        position: relative;
+    }
 
     .another-absolute-button{
         z-index: 10000000000;
