@@ -211,47 +211,47 @@ fastify.put("/api/blog/update", async (req, res) => {
 
 
 fastify.post("/api/blog/delete", async (req, res) => {
-        
-            let user_token = req.body.token
-            let blog_id = req.body.blogUUID
-            let userUUID = req.body.userUUID
-            console.log("\n\nBODY\n\n", req.body)
-            // authorize if token is fit for transaction
-            var userAuthenticated = null
-            try {
-                jwt.verify(user_token, process.env.JWT_SECRET, (err, decoded) => {
-                    if (err) {
-                        return callback(err, null)
-                    }
-                    else {
-                        userAuthenticated = decoded
-                    }
-                })
-                console.log(userAuthenticated)
-            } catch (err) {
-                return res.send({ status: "error", message: err })
-            }
-            if (userAuthenticated !== null) {
-                console.log("Deleting blog")
-                // compare user id with author_user_id
-                if (userAuthenticated.id !== userUUID){
-                    return res.send({ status: "error", message: "Not Authorized" })
-                }
-                else{
-                    blog.deleteBlogByID(blog_id, userUUID, (err, result) => {
-                        if (err) {
-                            res.send({ status: "error", message: err })
-                        }
-                        res.send({ status: "success", message: result })
-    
-                    })
-                }
-    
-                
+
+    let user_token = req.body.token
+    let blog_id = req.body.blogUUID
+    let userUUID = req.body.userUUID
+    console.log("\n\nBODY\n\n", req.body)
+    // authorize if token is fit for transaction
+    var userAuthenticated = null
+    try {
+        jwt.verify(user_token, process.env.JWT_SECRET, (err, decoded) => {
+            if (err) {
+                return callback(err, null)
             }
             else {
-                res.send({ status: "error", message: "Not Authorized" })
+                userAuthenticated = decoded
             }
+        })
+        console.log(userAuthenticated)
+    } catch (err) {
+        return res.send({ status: "error", message: err })
+    }
+    if (userAuthenticated !== null) {
+        console.log("Deleting blog")
+        // compare user id with author_user_id
+        if (userAuthenticated.id !== userUUID){
+            return res.send({ status: "error", message: "Not Authorized" })
+        }
+        else{
+            blog.deleteBlogByID(blog_id, userUUID, (err, result) => {
+                if (err) {
+                    res.send({ status: "error", message: err })
+                }
+                res.send({ status: "success", message: result })
+
+            })
+        }
+
+        
+    }
+    else {
+        res.send({ status: "error", message: "Not Authorized" })
+    }
 })
 
 
