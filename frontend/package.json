@@ -22,7 +22,7 @@
     "axios": "^1.6.2",
     "moment": "^2.29.4",
     "roboto-fontface": "*",
-    "vite": "^4.5.1",
+    "vite": "^4.5.2",
     "vue": "^3.3.11",
     "vue-faker": "^3.0.0",
     "vue-router": "^4.2.5",
